@@ -128,11 +128,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
+    <ClInclude Include="GameWindow.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="WindowsProject1.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GameWindow.cpp" />
     <ClCompile Include="WindowsProject1.cpp" />
   </ItemGroup>
   <ItemGroup>
