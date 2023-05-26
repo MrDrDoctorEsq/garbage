@@ -2,14 +2,14 @@
 //
 
 #include "framework.h"
-#include "GameWindow.h"
+#include "Tetris.h"
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE,
                      _In_ LPWSTR    lpCmdLine,
                      _In_ int       nCmdShow)
 {
-    GameWindow game(hInstance, lpCmdLine, nCmdShow);
+    Tetris game(hInstance, lpCmdLine, nCmdShow);
     if (!game.Initialize(L"garbage", L"AAAAAAAAAAAAA"))
     {
         return false;

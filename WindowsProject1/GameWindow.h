@@ -4,18 +4,24 @@ class GameWindow
 {
 private:
 	static const int MAX_LOADSTRING = 100;
-	static HINSTANCE hInst;
+	HINSTANCE hInst;
 	LPWSTR lpCmdLine;
 	int nCmdShow;
 	int ExitCode;
 	WCHAR szTitle[MAX_LOADSTRING];
 	WCHAR szWindowClass[MAX_LOADSTRING];
+	LRESULT CALLBACK    InternalWndProc(UINT, WPARAM, LPARAM); 
 	static LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 	static INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+	void DrawWindow();
+protected:
+	HWND hWnd; 
 public:
 	int GetExitCode() { return ExitCode; }
 	GameWindow(HINSTANCE hInstance, LPWSTR lpCmdLine, int nCmdShow);
-	~GameWindow();
+	virtual ~GameWindow();
+
 	bool Initialize(const wchar_t*  szClassId, const wchar_t* szTitle);
 	bool Run();
+	virtual void OnPaint(HDC hDC);
 };

@@ -1,44 +1,25 @@
 #include "GameWindow.h"
 #include "WindowsProject1.h"
 
-HINSTANCE GameWindow::hInst = 0;
-
 LRESULT CALLBACK GameWindow::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-        switch (message)
+    switch (message)
+    {
+    case WM_CREATE:
+        CREATESTRUCT* pParams = (CREATESTRUCT*)lParam;
+        if (pParams->lpCreateParams == nullptr)
         {
-        case WM_COMMAND:
-        {
-            int wmId = LOWORD(wParam);
-            // Parse the menu selections:
-            switch (wmId)
-            {
-            case IDM_ABOUT:
-                DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
-                break;
-            case IDM_EXIT:
-                DestroyWindow(hWnd);
-                break;
-            default:
-                return DefWindowProc(hWnd, message, wParam, lParam);
-            }
+            throw;
         }
+        SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)pParams->lpCreateParams);
         break;
-        case WM_PAINT:
-        {
-            PAINTSTRUCT ps;
-            HDC hdc = BeginPaint(hWnd, &ps);
-            // TODO: Add any drawing code that uses hdc here...
-            EndPaint(hWnd, &ps);
-        }
-        break;
-        case WM_DESTROY:
-            PostQuitMessage(0);
-            break;
-        default:
-            return DefWindowProc(hWnd, message, wParam, lParam);
-        }
-        return 0;
+    }
+    GameWindow* pWnd = (GameWindow*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+    if (pWnd == nullptr)
+    {
+        return DefWindowProc(hWnd, message, wParam, lParam);
+    }
+        return pWnd->InternalWndProc(message, wParam, lParam);
 }
 INT_PTR CALLBACK GameWindow::About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -59,7 +40,9 @@ INT_PTR CALLBACK GameWindow::About(HWND hDlg, UINT message, WPARAM wParam, LPARA
         return (INT_PTR)FALSE;
 }
 GameWindow::GameWindow(HINSTANCE hInstance, LPWSTR lpCmdLine, int nCmdShow)
-    : lpCmdLine(lpCmdLine)
+    : hInst(hInstance)
+    , hWnd(0)
+    , lpCmdLine(lpCmdLine)
     , nCmdShow(nCmdShow)
     , ExitCode(0)
 
@@ -93,8 +76,8 @@ bool GameWindow::Initialize(const wchar_t* classId, const wchar_t* title)
     wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
     RegisterClassExW(&wcex);
 
-    HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-        CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInst, nullptr);
+    hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+        CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInst, this);
 
     if (!hWnd)
     {
@@ -117,4 +100,63 @@ bool GameWindow::Run()
     TranslateMessage(&msg);
     DispatchMessage(&msg);
     return true;
+}
+LRESULT CALLBACK GameWindow::InternalWndProc(UINT message, WPARAM wParam, LPARAM lParam)
+{
+    switch (message)
+    {
+    case WM_COMMAND:
+    {
+        int wmId = LOWORD(wParam);
+        // Parse the menu selections:
+        switch (wmId)
+        {
+        case IDM_ABOUT:
+            DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+            break;
+        case IDM_EXIT:
+            DestroyWindow(hWnd);
+            break;
+        default:
+            return DefWindowProc(hWnd, message, wParam, lParam);
+        }
+    }
+    break;
+    case WM_ERASEBKGND:
+        return 0;
+    case WM_PAINT:
+        DrawWindow();
+    break;
+    case WM_DESTROY:
+        PostQuitMessage(0);
+        break;
+    default:
+        return DefWindowProc(hWnd, message, wParam, lParam);
+    }
+    return 0;
+}
+
+void GameWindow::OnPaint(HDC hDC)
+{
+
+}
+void GameWindow::DrawWindow()
+{
+
+        PAINTSTRUCT ps;
+        HDC hdc = BeginPaint(hWnd, &ps);
+        RECT rtClient;
+        GetClientRect(hWnd, &rtClient);
+        int xSize = rtClient.right - rtClient.left;
+        int ySize = rtClient.bottom - rtClient.top;
+        HDC hMemoryDC = CreateCompatibleDC(hdc);
+        HBITMAP hScreenBitmap = CreateCompatibleBitmap(GetDC(NULL), xSize, ySize);
+        SelectObject(hMemoryDC, hScreenBitmap);
+        OnPaint(hMemoryDC);
+        BitBlt(hdc, 0, 0, xSize, ySize, hMemoryDC, 0, 0, SRCCOPY);
+        EndPaint(hWnd, &ps);
+        DeleteObject(hScreenBitmap);
+        DeleteDC(hMemoryDC);
+
+
 }
