@@ -17,7 +17,7 @@ private:
 protected:
 	HWND hWnd; 
 public:
-	int GetExitCode() { return ExitCode; }
+	int GetExitCode() const { return ExitCode; }
 	GameWindow(HINSTANCE hInstance, LPWSTR lpCmdLine, int nCmdShow);
 	virtual ~GameWindow();
 
