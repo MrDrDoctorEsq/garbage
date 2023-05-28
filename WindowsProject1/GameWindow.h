@@ -20,8 +20,8 @@ public:
 	int GetExitCode() const { return ExitCode; }
 	GameWindow(HINSTANCE hInstance, LPWSTR lpCmdLine, int nCmdShow);
 	virtual ~GameWindow();
-
 	bool Initialize(const wchar_t*  szClassId, const wchar_t* szTitle);
 	bool Run();
 	virtual void OnPaint(HDC hDC);
+	virtual void OnKeyDown(int vkCode);
 };

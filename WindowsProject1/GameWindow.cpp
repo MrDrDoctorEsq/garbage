@@ -130,6 +130,9 @@ LRESULT CALLBACK GameWindow::InternalWndProc(UINT message, WPARAM wParam, LPARAM
     case WM_DESTROY:
         PostQuitMessage(0);
         break;
+    case WM_KEYDOWN:
+        OnKeyDown(wParam);
+        break;
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
     }
@@ -157,6 +160,8 @@ void GameWindow::DrawWindow()
         EndPaint(hWnd, &ps);
         DeleteObject(hScreenBitmap);
         DeleteDC(hMemoryDC);
-
+}
+void GameWindow::OnKeyDown(int vkCode)
+{
 
 }
